@@ -157,9 +157,9 @@ const CustomLevel = {
 
         let result;
         if (data.language === 'python') {
-            result = await PythonSandbox.run(data.correctCode);
+            result = await PythonSandbox.run(data.correctCode, 3000);
         } else {
-            result = await JsSandbox.run(data.correctCode);
+            result = await JsSandbox.run(data.correctCode, 3000);
         }
 
         outputEl.innerHTML = '';
@@ -204,7 +204,14 @@ const CustomLevel = {
         Game.loadCustomLevels();
         Game.updateStartScreen();
 
-        alert('关卡保存成功！');
-        this.hide();
+        if (confirm('关卡保存成功！是否立即开始挑战这个关卡？')) {
+            Game.startGameWithCustomLevel(level.id);
+        } else {
+            this.hide();
+        }
+    },
+
+    playCustomLevel(levelId) {
+        Game.startGameWithCustomLevel(levelId);
     }
 };

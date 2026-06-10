@@ -107,7 +107,7 @@ const Game = {
         SandboxOutput.clear();
 
         this.updateLevelUI();
-        this.updateRunButton();
+        this.resetButtons();
         this.hideFeedback();
 
         const hintContainer = document.getElementById('hint-container');
@@ -119,6 +119,22 @@ const Game = {
         if (hintBtn) {
             hintBtn.disabled = false;
             hintBtn.textContent = '💡 提示';
+        }
+    },
+
+    resetButtons() {
+        const runBtn = document.getElementById('run-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (runBtn) {
+            runBtn.style.display = 'flex';
+            runBtn.disabled = true;
+            runBtn.textContent = '▶️ 运行';
+        }
+        
+        if (nextBtn) {
+            nextBtn.style.display = 'none';
+            nextBtn.textContent = '➡️ 下一关';
         }
     },
 
@@ -423,9 +439,85 @@ const Game = {
         
         if (highScoreDisplay) highScoreDisplay.textContent = highScore;
         if (totalLevelsDisplay) totalLevelsDisplay.textContent = levels.length + this.customLevels.filter(l => l.language === this.state.currentLanguage).length;
+
+        this.renderCustomLevelsList();
+    },
+
+    renderCustomLevelsList() {
+        const section = document.getElementById('custom-levels-section');
+        const list = document.getElementById('custom-levels-list');
+        if (!section || !list) return;
+
+        const customLevels = this.getCustomLevelsByLanguage(this.state.currentLanguage);
+
+        if (customLevels.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        list.innerHTML = '';
+
+        customLevels.forEach(level => {
+            const item = document.createElement('div');
+            item.className = 'custom-level-item';
+            item.dataset.levelId = level.id;
+            
+            item.innerHTML = `
+                <div class="custom-level-info">
+                    <span class="custom-level-name">${Helpers.escapeHtml(level.title)}</span>
+                    <span class="custom-level-lang">${level.language}</span>
+                </div>
+                <span class="custom-level-play">开始 →</span>
+            `;
+
+            item.addEventListener('click', () => {
+                this.startGameWithCustomLevel(level.id);
+            });
+
+            list.appendChild(item);
+        });
     },
 
     restart() {
         this.startGame(this.state.currentLanguage);
+    },
+
+    startGameWithCustomLevel(levelId) {
+        const customLevel = this.customLevels.find(l => l.id === levelId);
+        if (!customLevel) {
+            alert('未找到该关卡');
+            return;
+        }
+
+        const language = customLevel.language;
+        this.state = {
+            currentLanguage: language,
+            currentLevelIndex: 0,
+            score: 0,
+            lives: 3,
+            selectedOptionIndex: null,
+            isCorrect: null,
+            hasRun: false,
+            showHint: false,
+            isGameOver: false,
+            isWin: false,
+            correctCount: 0
+        };
+
+        this.loadLevels(language);
+        
+        const levelIndex = this.levels.findIndex(l => l.id === levelId);
+        if (levelIndex >= 0) {
+            this.state.currentLevelIndex = levelIndex;
+        }
+
+        this.updateUI();
+        this.loadLevel();
+        this.showScreen('game-screen');
+    },
+
+    getCustomLevelsByLanguage(language) {
+        return this.customLevels.filter(l => l.language === language);
     }
 };

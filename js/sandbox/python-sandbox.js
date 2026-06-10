@@ -50,7 +50,7 @@ const PythonSandbox = {
         });
     },
 
-    async run(code) {
+    async run(code, timeoutMs = 3000) {
         try {
             await this.ensureLoaded();
         } catch (error) {
@@ -65,24 +65,47 @@ const PythonSandbox = {
         let hasError = false;
         let errorMessage = '';
 
+        let isCancelled = false;
+        const timeoutId = setTimeout(() => {
+            isCancelled = true;
+            if (typeof Sk !== 'undefined' && Sk.execStart) {
+                try {
+                    Sk.misceval.cancel = true;
+                } catch (e) {}
+            }
+        }, timeoutMs);
+
         try {
+            Sk.execLimit = 1000000;
+            
             const result = await Sk.misceval.asyncToPromise(() => {
+                if (isCancelled) {
+                    throw new Error(`代码执行超时（超过${timeoutMs/1000}秒），可能存在死循环`);
+                }
                 return Sk.importMainWithBody("<stdin>", false, code, true);
             });
         } catch (error) {
+            clearTimeout(timeoutId);
             hasError = true;
-            errorMessage = error.toString ? error.toString() : String(error);
             
-            if (errorMessage.includes('Error:')) {
-                const parts = errorMessage.split('Error:');
-                const errorType = parts[0].split('.').pop() + 'Error';
-                const errorMsg = parts[parts.length - 1].trim();
-                errorMessage = `${errorType}: ${errorMsg}`;
+            if (isCancelled) {
+                errorMessage = `代码执行超时（超过${timeoutMs/1000}秒），可能存在死循环`;
+            } else {
+                errorMessage = error.toString ? error.toString() : String(error);
+                
+                if (errorMessage.includes('Error:')) {
+                    const parts = errorMessage.split('Error:');
+                    const errorType = parts[0].split('.').pop() + 'Error';
+                    const errorMsg = parts[parts.length - 1].trim();
+                    errorMessage = `${errorType}: ${errorMsg}`;
+                }
             }
             
             this.currentOutput.push({ type: 'error-header', message: '错误：' });
             this.currentOutput.push({ type: 'error-message', message: errorMessage });
         }
+
+        clearTimeout(timeoutId);
 
         const output = this.currentOutput || [];
         this.currentOutput = null;

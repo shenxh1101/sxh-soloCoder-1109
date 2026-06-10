@@ -98,7 +98,7 @@ let template = \`模板字符串\`;`,
         difficulty: 2,
         category: '函数',
         buggyCode: `// 定义一个打招呼的函数
-function sayHello(name) {
+function sayHello(name {
     console.log("你好，" + name);
 }
 
@@ -110,17 +110,17 @@ function sayHello(name) {
 
 sayHello("小红");`,
         errorLine: 2,
-        hint: '函数定义的语法格式需要检查',
+        hint: '检查函数参数列表的括号是否完整',
         options: [
             {
                 id: 'a',
-                label: '在函数名后添加括号',
-                explanation: '正确！函数名后面必须跟括号，即使没有参数也需要空括号。'
+                label: '在 name 后添加右括号：function sayHello(name)',
+                explanation: '正确！函数参数列表必须用圆括号包裹，缺少右括号会导致语法错误。'
             },
             {
                 id: 'b',
                 label: '去掉大括号',
-                explanation: '不对，函数体必须用大括号包裹。'
+                explanation: '不对，函数体必须用大括号包裹，去掉会导致更多语法错误。'
             },
             {
                 id: 'c',
@@ -129,14 +129,14 @@ sayHello("小红");`,
             },
             {
                 id: 'd',
-                label: '添加返回值',
-                explanation: '函数可以没有返回值，问题不在于此。'
+                label: '在函数名后添加 = 号',
+                explanation: '这是函数表达式的写法，但原来的语法问题是缺少括号，不是缺少等号。'
             }
         ],
         correctOptionIndex: 0,
         knowledgePoint: {
             title: '函数定义',
-            description: '使用 function 关键字定义函数，函数名后跟参数列表和函数体',
+            description: '使用 function 关键字定义函数，函数名后跟参数列表（用圆括号包裹）和函数体',
             example: `// 无参数函数
 function sayHi() {
     console.log("Hi!");
@@ -146,7 +146,7 @@ function sayHi() {
 function add(a, b) {
     return a + b;
 }`,
-            tip: '函数名后面的括号是必须的，即使没有参数也要写空括号。'
+            tip: '函数名后面的圆括号是必须的，参数列表必须完整包裹在括号内，即使没有参数也要写空括号。'
         }
     },
     {
