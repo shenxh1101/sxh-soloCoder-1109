@@ -1,0 +1,167 @@
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.option-card {
+    padding: 10px 14px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.option-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.option-card.selected {
+    border-color: var(--accent-primary);
+    background: rgba(122, 162, 247, 0.08);
+    box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.1);
+}
+
+.option-card.correct {
+    border-color: var(--accent-success);
+    background: rgba(158, 206, 106, 0.1);
+    animation: correctPulse 0.5s ease;
+}
+
+.option-card.incorrect {
+    border-color: var(--accent-error);
+    background: rgba(247, 118, 142, 0.1);
+    animation: errorShake 0.5s ease;
+}
+
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+}
+
+.option-label {
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+}
+
+.option-card:hover .option-label {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.option-card.selected .option-label {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.option-card.correct .option-label {
+    background: var(--accent-success);
+    color: white;
+}
+
+.option-card.incorrect .option-label {
+    background: var(--accent-error);
+    color: white;
+}
+
+.option-content {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.option-content code {
+    background: var(--bg-tertiary);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--accent-primary);
+}
+
+.option-explanation {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: none;
+    line-height: 1.5;
+}
+
+.option-card.show-explanation .option-explanation {
+    display: block;
+    animation: fadeSlide 0.3s ease;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.option-status-icon {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 16px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all var(--transition-fast);
+}
+
+.option-card.correct .option-status-icon,
+.option-card.incorrect .option-status-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.option-card.correct .option-status-icon {
+    color: var(--accent-success);
+}
+
+.option-card.incorrect .option-status-icon {
+    color: var(--accent-error);
+}
+
+.options-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.options-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.options-list::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}

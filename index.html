@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语法结构 - 代码语法解谜游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/themes/dark.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components/code-editor.css">
+    <link rel="stylesheet" href="css/components/options.css">
+    <link rel="stylesheet" href="css/components/sandbox.css">
+    <link rel="stylesheet" href="css/components/cards.css">
+</head>
+<body data-theme="dark">
+    <div id="app">
+        <div id="start-screen" class="screen active">
+            <div class="start-container">
+                <div class="game-logo">
+                    <span class="logo-bracket">{</span>
+                    <span class="logo-text">语法结构</span>
+                    <span class="logo-bracket">}</span>
+                </div>
+                <p class="game-subtitle">修复代码错误，掌握编程语法</p>
+                
+                <div class="language-selector">
+                    <span class="selector-label">选择语言：</span>
+                    <div class="language-buttons">
+                        <button class="lang-btn active" data-lang="javascript">
+                            <span class="lang-icon">JS</span>
+                            <span class="lang-name">JavaScript</span>
+                        </button>
+                        <button class="lang-btn" data-lang="python">
+                            <span class="lang-icon">Py</span>
+                            <span class="lang-name">Python</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="start-buttons">
+                    <button id="start-game-btn" class="primary-btn">
+                        🎮 开始游戏
+                    </button>
+                    <button id="custom-level-btn" class="secondary-btn">
+                        ✏️ 自定义关卡
+                    </button>
+                </div>
+
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">🏆</span>
+                        <span class="stat-label">最高分</span>
+                        <span class="stat-value" id="high-score-display">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📚</span>
+                        <span class="stat-label">内置关卡</span>
+                        <span class="stat-value" id="total-levels-display">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <header class="game-header">
+                <div class="header-left">
+                    <button id="back-to-menu" class="icon-btn" title="返回菜单">
+                        ←
+                    </button>
+                    <div class="level-info">
+                        <span class="level-number">第 <span id="current-level">1</span> 关</span>
+                        <span class="level-title" id="level-title">变量与基础</span>
+                    </div>
+                </div>
+                
+                <div class="header-center">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-text">
+                        <span id="progress-current">1</span> / <span id="progress-total">10</span>
+                    </span>
+                </div>
+
+                <div class="header-right">
+                    <div class="score-display">
+                        <span class="score-icon">⭐</span>
+                        <span class="score-value" id="score-value">0</span>
+                    </div>
+                    <div class="lives-display" id="lives-display">
+                        <span class="life-heart">❤️</span>
+                        <span class="life-heart">❤️</span>
+                        <span class="life-heart">❤️</span>
+                    </div>
+                    <div class="header-actions">
+                        <select id="language-select" class="lang-select">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                        </select>
+                        <button id="theme-toggle" class="icon-btn" title="切换主题">
+                            🌙
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="game-main">
+                <div class="left-panel">
+                    <div class="code-section">
+                        <div class="section-header">
+                            <span class="section-title">📝 代码</span>
+                            <span class="difficulty-badge" id="difficulty-badge">简单</span>
+                        </div>
+                        <div class="code-editor-container">
+                            <div class="code-editor" id="code-editor">
+                                <div class="line-numbers" id="line-numbers"></div>
+                                <div class="code-content" id="code-content"></div>
+                            </div>
+                        </div>
+                        <div class="hint-container" id="hint-container" style="display: none;">
+                            <span class="hint-icon">💡</span>
+                            <span class="hint-text" id="hint-text"></span>
+                        </div>
+                    </div>
+
+                    <div class="options-section">
+                        <div class="section-header">
+                            <span class="section-title">🔧 选择修复方案</span>
+                        </div>
+                        <div class="options-list" id="options-list">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="action-buttons">
+                        <button id="hint-btn" class="action-btn hint-btn">
+                            💡 提示
+                        </button>
+                        <button id="run-btn" class="action-btn run-btn" disabled>
+                            ▶️ 运行
+                        </button>
+                        <button id="next-btn" class="action-btn next-btn" style="display: none;">
+                            ➡️ 下一关
+                        </button>
+                    </div>
+
+                    <div class="sandbox-section">
+                        <div class="section-header">
+                            <span class="section-title">🖥️ 输出</span>
+                            <span class="sandbox-status" id="sandbox-status">等待运行</span>
+                        </div>
+                        <div class="sandbox-output" id="sandbox-output">
+                            <div class="output-placeholder">
+                                <span class="placeholder-icon">⌨️</span>
+                                <span class="placeholder-text">选择修复方案后点击"运行"查看结果</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-card-section">
+                        <div class="learning-card" id="learning-card">
+                            <div class="card-front">
+                                <div class="card-header">
+                                    <span class="card-icon">📖</span>
+                                    <span class="card-title">知识点</span>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="knowledge-title" id="knowledge-title">变量声明</h3>
+                                    <p class="knowledge-desc" id="knowledge-desc">点击卡片翻转查看详情</p>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="flip-hint">点击翻转 →</span>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="card-header">
+                                    <span class="card-icon">💡</span>
+                                    <span class="card-title">详细说明</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="knowledge-example" id="knowledge-example"></div>
+                                    <p class="knowledge-tip" id="knowledge-tip"></p>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="flip-hint">← 点击返回</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feedback-section" id="feedback-section" style="display: none;">
+                        <div class="feedback-content" id="feedback-content">
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="custom-screen" class="screen">
+            <header class="custom-header">
+                <button id="custom-back-btn" class="icon-btn">← 返回</button>
+                <h2>✏️ 创建自定义关卡</h2>
+            </header>
+            
+            <main class="custom-main">
+                <div class="custom-form">
+                    <div class="form-group">
+                        <label>编程语言</label>
+                        <select id="custom-language" class="form-input">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>关卡标题</label>
+                        <input type="text" id="custom-title" class="form-input" placeholder="例如：字符串引号错误">
+                    </div>
+
+                    <div class="form-group">
+                        <label>错误代码</label>
+                        <textarea id="custom-buggy-code" class="form-textarea" rows="8" placeholder="输入有语法错误的代码..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>正确代码</label>
+                        <textarea id="custom-correct-code" class="form-textarea" rows="8" placeholder="输入修复后的正确代码..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>错误行号（从1开始）</label>
+                        <input type="number" id="custom-error-line" class="form-input" min="1" value="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>提示文字</label>
+                        <input type="text" id="custom-hint" class="form-input" placeholder="给玩家的提示...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>知识点标题</label>
+                        <input type="text" id="custom-kp-title" class="form-input" placeholder="例如：字符串的引号">
+                    </div>
+
+                    <div class="form-group">
+                        <label>知识点说明</label>
+                        <textarea id="custom-kp-desc" class="form-textarea" rows="3" placeholder="知识点的简要说明..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>选项设置</label>
+                        <div class="options-builder" id="options-builder">
+                            <div class="option-item" data-index="0">
+                                <div class="option-header">
+                                    <span class="option-label">选项 A</span>
+                                    <label class="correct-option">
+                                        <input type="radio" name="correct-option" value="0" checked>
+                                        正确答案
+                                    </label>
+                                </div>
+                                <input type="text" class="option-input" placeholder="选项描述">
+                            </div>
+                            <div class="option-item" data-index="1">
+                                <div class="option-header">
+                                    <span class="option-label">选项 B</span>
+                                    <label class="correct-option">
+                                        <input type="radio" name="correct-option" value="1">
+                                        正确答案
+                                    </label>
+                                </div>
+                                <input type="text" class="option-input" placeholder="选项描述">
+                            </div>
+                            <div class="option-item" data-index="2">
+                                <div class="option-header">
+                                    <span class="option-label">选项 C</span>
+                                    <label class="correct-option">
+                                        <input type="radio" name="correct-option" value="2">
+                                        正确答案
+                                    </label>
+                                </div>
+                                <input type="text" class="option-input" placeholder="选项描述">
+                            </div>
+                            <div class="option-item" data-index="3">
+                                <div class="option-header">
+                                    <span class="option-label">选项 D</span>
+                                    <label class="correct-option">
+                                        <input type="radio" name="correct-option" value="3">
+                                        正确答案
+                                    </label>
+                                </div>
+                                <input type="text" class="option-input" placeholder="选项描述">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-actions">
+                        <button id="test-custom-btn" class="secondary-btn">
+                            🧪 预览测试
+                        </button>
+                        <button id="save-custom-btn" class="primary-btn">
+                            💾 保存关卡
+                        </button>
+                    </div>
+                </div>
+
+                <div class="custom-preview" id="custom-preview-section" style="display: none;">
+                    <h3>👀 预览</h3>
+                    <div class="preview-code">
+                        <div class="code-editor mini">
+                            <div class="line-numbers" id="preview-line-numbers"></div>
+                            <div class="code-content" id="preview-code-content"></div>
+                        </div>
+                    </div>
+                    <button id="preview-run-btn" class="action-btn run-btn">
+                        ▶️ 运行正确代码
+                    </button>
+                    <div class="preview-output">
+                        <div class="sandbox-output mini" id="preview-sandbox-output">
+                            <div class="output-placeholder">
+                                <span class="placeholder-icon">⌨️</span>
+                                <span class="placeholder-text">点击运行查看输出</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="gameover-screen" class="screen">
+            <div class="gameover-container">
+                <div class="gameover-icon" id="gameover-icon">😢</div>
+                <h2 class="gameover-title" id="gameover-title">游戏结束</h2>
+                <p class="gameover-subtitle" id="gameover-subtitle">别灰心，再接再厉！</p>
+                
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <span class="final-stat-label">最终得分</span>
+                        <span class="final-stat-value score" id="final-score">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">答对题数</span>
+                        <span class="final-stat-value" id="final-correct">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">到达关卡</span>
+                        <span class="final-stat-value" id="final-level">0</span>
+                    </div>
+                </div>
+
+                <div class="gameover-buttons">
+                    <button id="restart-btn" class="primary-btn">
+                        🔄 再玩一次
+                    </button>
+                    <button id="menu-btn" class="secondary-btn">
+                        🏠 返回菜单
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="win-screen" class="screen">
+            <div class="gameover-container win">
+                <div class="gameover-icon">🎉</div>
+                <h2 class="gameover-title">恭喜通关！</h2>
+                <p class="gameover-subtitle">你已经掌握了所有语法知识！</p>
+                
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <span class="final-stat-label">最终得分</span>
+                        <span class="final-stat-value score" id="win-score">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">答对题数</span>
+                        <span class="final-stat-value" id="win-correct">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">剩余生命</span>
+                        <span class="final-stat-value" id="win-lives">0</span>
+                    </div>
+                </div>
+
+                <div class="gameover-buttons">
+                    <button id="win-restart-btn" class="primary-btn">
+                        🔄 再玩一次
+                    </button>
+                    <button id="win-menu-btn" class="secondary-btn">
+                        🏠 返回菜单
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+    
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/syntax-highlight.js"></script>
+    <script src="js/levels/javascript.js"></script>
+    <script src="js/levels/python.js"></script>
+    <script src="js/sandbox/js-sandbox.js"></script>
+    <script src="js/sandbox/python-sandbox.js"></script>
+    <script src="js/components/code-view.js"></script>
+    <script src="js/components/options-panel.js"></script>
+    <script src="js/components/sandbox-output.js"></script>
+    <script src="js/components/learning-card.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/custom-level.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

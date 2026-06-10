@@ -1,0 +1,150 @@
+.code-editor-container {
+    background: var(--bg-code);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.code-editor {
+    display: flex;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow: auto;
+    max-height: 280px;
+    min-height: 160px;
+}
+
+.code-editor.mini {
+    max-height: 250px;
+    min-height: 150px;
+    font-size: 13px;
+}
+
+.line-numbers {
+    padding: 12px 10px 12px 14px;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    text-align: right;
+    user-select: none;
+    border-right: 1px solid var(--border-color);
+    min-width: 44px;
+    font-size: 12px;
+}
+
+.line-numbers .line-number {
+    display: block;
+    height: 1.5em;
+    line-height: 1.5em;
+}
+
+.code-content {
+    flex: 1;
+    padding: 12px 14px;
+    white-space: pre;
+    overflow-x: auto;
+    color: var(--code-variable);
+}
+
+.code-content .code-line {
+    display: block;
+    height: 1.5em;
+    line-height: 1.5em;
+    padding: 0 4px;
+    margin: 0 -4px;
+    border-radius: 3px;
+    transition: background-color var(--transition-fast);
+}
+
+.code-content .code-line.error-line {
+    background: rgba(247, 118, 142, 0.15);
+    position: relative;
+}
+
+.code-content .code-line.error-line::before {
+    content: '▶';
+    position: absolute;
+    left: -20px;
+    color: var(--accent-error);
+    animation: errorBlink 1s ease-in-out infinite;
+}
+
+@keyframes errorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.code-content .code-line.hint-highlight {
+    background: rgba(224, 175, 104, 0.2);
+    animation: hintPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+    0%, 100% { background: rgba(224, 175, 104, 0.1); }
+    50% { background: rgba(224, 175, 104, 0.3); }
+}
+
+.code-content .code-line.correct-line {
+    background: rgba(158, 206, 106, 0.15);
+}
+
+.token-keyword {
+    color: var(--code-keyword);
+    font-weight: 500;
+}
+
+.token-string {
+    color: var(--code-string);
+}
+
+.token-number {
+    color: var(--code-number);
+}
+
+.token-comment {
+    color: var(--code-comment);
+    font-style: italic;
+}
+
+.token-function {
+    color: var(--code-function);
+}
+
+.token-operator {
+    color: var(--code-operator);
+}
+
+.token-property {
+    color: var(--code-property);
+}
+
+.token-method {
+    color: var(--code-function);
+}
+
+.token-boolean {
+    color: var(--code-number);
+}
+
+.token-null {
+    color: var(--code-number);
+}
+
+.code-editor::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-editor::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+.code-editor::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.code-editor::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
